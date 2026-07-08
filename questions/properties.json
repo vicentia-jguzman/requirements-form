@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Farms App — Farm & Property Details",
+    "title": "Farm & Property Details",
     "respondents": ["Farm Manager", "Trials Manager"],
     "topic": "Where each piece of information belongs. Farm = the business; a farm can have several properties; each property can have several paddocks (the field a trial runs on)."
   },

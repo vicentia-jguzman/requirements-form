@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Farms App — Trials & Paddocks",
+    "title": "Trials & Paddocks",
     "respondents": ["Farm Manager", "Trials Manager"],
     "topic": "A trial runs on a paddock (a named field within a property). These questions sort which details live with the farm vs which are decided per trial."
   },
