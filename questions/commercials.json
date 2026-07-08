@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "title": "Farms App — Commercial Role",
+    "respondents": ["Farm Manager", "Trials Manager"],
+    "topic": "Who Commercials are, their regions, and what they can create/see."
+  },
+  "questions": [
+    {
+      "id": "commercial.admin.who",
+      "section": "Commercials — roles & responsibilities",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Who creates a Commercial user and assigns them to their country?",
+      "options": [
+        "A head-office / SUPER admin",
+        "A local lead/manager in that country",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "commercial.region.authority",
+      "section": "Commercials — roles & responsibilities",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Who should decide which regions within a country a Commercial is allowed to create farms in?",
+      "help": "This person needs local knowledge of that country's areas — e.g. someone at head office may not know the regions of Kenya or Mexico.",
+      "options": [
+        "A head-office / SUPER admin",
+        "A local lead/manager in that country",
+        "The Commercial proposes their areas and someone approves",
+        "Not sure — needs discussion"
+      ]
+    },
+    {
+      "id": "commercial.region.required",
+      "section": "Commercials — roles & responsibilities",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Within their country, does a Commercial always work in specific regions, or can a Commercial cover the whole country?",
+      "help": "e.g. in Australia a Commercial covers QLD plus parts of NSW; other countries may not split into regions at all.",
+      "options": [
+        "Always specific regions",
+        "Can be the whole country",
+        "It varies by country",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "commercial.region.granularity",
+      "section": "Commercials — roles & responsibilities",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "multi",
+      "text": "How fine-grained are a Commercial's regions? Tick every level you use.",
+      "help": "e.g. 'QLD' is a state; 'parts of NSW' might be shires/council areas.",
+      "options": [
+        "States / provinces",
+        "Districts / shires / council areas",
+        "Postcodes",
+        "Custom areas drawn on a map",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "commercial.region.overlap",
+      "section": "Commercials — roles & responsibilities",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Can the same region be assigned to more than one Commercial, or must each region belong to only one?",
+      "options": [
+        "Each region belongs to only one Commercial (no overlap)",
+        "A region can be shared by more than one Commercial",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "commercial.write.guard",
+      "section": "Commercials — roles & responsibilities",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Should a Commercial be able to create/edit farms only inside their assigned regions, or anywhere in their country?",
+      "options": [
+        "Only within their assigned regions",
+        "Anywhere in their country",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "commercial.visibility",
+      "section": "Commercials — roles & responsibilities",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Which farms should a Commercial be able to SEE (view, not necessarily edit)?",
+      "options": [
+        "Only farms in their own regions",
+        "All farms in their own country",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "commercial.edit.others",
+      "section": "Commercials — roles & responsibilities",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Can a Commercial edit or delete a farm that a DIFFERENT Commercial created?",
+      "options": [
+        "No — only the farms they created",
+        "Yes — any farm within their regions",
+        "Yes — any farm in their country",
+        "Not sure"
+      ]
+    }
+  ]
+}

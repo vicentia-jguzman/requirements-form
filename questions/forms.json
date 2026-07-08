@@ -1,0 +1,11 @@
+{
+  "title": "VMS — Requirements",
+  "intro": "Pick the topic you're helping with. Each form is short. You can reopen any of them later and change your answers.",
+  "forms": [
+    {
+      "id": "commercials",
+      "title": "Farms App — Commercial Role",
+      "desc": "Who Commercials are, their regions, and what they can create and see."
+    }
+  ]
+}
