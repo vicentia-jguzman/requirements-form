@@ -6,6 +6,11 @@
       "id": "commercials",
       "title": "Farms App — Commercial Role",
       "desc": "Who Commercials are, their regions, and what they can create and see."
+    },
+    {
+      "id": "properties",
+      "title": "Farms App — Farm & Property Details",
+      "desc": "Where each piece of information belongs: farm business, property, or paddock."
     }
   ]
 }

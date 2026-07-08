@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "title": "Farms App — Farm & Property Details",
+    "respondents": ["Farm Manager", "Trials Manager"],
+    "topic": "Where each piece of information belongs. Farm = the business; a farm can have several properties; each property can have several paddocks (the field a trial runs on)."
+  },
+  "questions": [
+    {
+      "id": "farm.location.address",
+      "section": "The farm and its land",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Is a farm always located at one of its properties, or can its address be somewhere else (an office or home in town)?",
+      "options": [
+        "Always at one of its properties",
+        "Can be somewhere else",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "farm.property.required",
+      "section": "The farm and its land",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "When you add a new farm, does it always already have a property, or can a farm be on your books before any property is pinned down?",
+      "options": [
+        "Always has a property",
+        "Can exist without one yet",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "contacts.level",
+      "section": "Contacts",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Are contacts held at the farm level, the property level, or both?",
+      "help": "A farm can have several contacts either way — this is just about where they sit.",
+      "options": [
+        "At the farm",
+        "At each property",
+        "Both",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "contacts.fields",
+      "section": "Contacts",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "multi",
+      "text": "For each contact, what do you need to know?",
+      "options": [
+        "Name",
+        "Phone",
+        "Email",
+        "Their role (owner, grower, manager…)",
+        "Best way to reach them",
+        "Other"
+      ]
+    },
+    {
+      "id": "crops.level",
+      "section": "Crops",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Main crops — recorded for each property, summarised for the whole farm, or both?",
+      "options": [
+        "For each property",
+        "For the whole farm",
+        "Both",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "profile.experience.level",
+      "section": "Farm profile",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Farming experience — recorded about the farm overall, or does it differ by property?",
+      "options": [
+        "About the farm overall",
+        "Differs by property",
+        "We don't track it",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "area.total",
+      "section": "Farm profile",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Do you need a single total farming-area figure for the whole farm, or is the size of each property enough (they add up)?",
+      "options": [
+        "Need a farm-wide total",
+        "Per-property sizes are enough",
+        "Both",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "area.unit.level",
+      "section": "Farm profile",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Is the land-size unit (hectares or acres) fixed for the whole farm, or chosen per property?",
+      "help": "Feel free to note which unit you normally use.",
+      "options": [
+        "Same unit for the whole farm",
+        "Chosen per property",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "trialpref.scope",
+      "section": "Trial preferences",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "How much a farm can commit to a trial, or why they want to trial — is that about the farm in general, or decided fresh for each trial?",
+      "options": [
+        "About the farm in general",
+        "Decided per trial",
+        "Not sure"
+      ]
+    },
+    {
+      "id": "trialpref.property",
+      "section": "Trial preferences",
+      "app": "farms",
+      "askOf": "Farm Manager",
+      "status": "active",
+      "type": "single",
+      "text": "Would those preferences ever differ between a farm's properties?",
+      "showIf": { "id": "trialpref.scope", "equals": "About the farm in general" },
+      "options": [
+        "No — same across the farm",
+        "Yes — can differ by property",
+        "Not sure"
+      ]
+    }
+  ]
+}
