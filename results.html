@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>VMS — Requirements Results</title>
+<style>
+  :root {
+    --bg: #f4f6f4;
+    --card: #ffffff;
+    --ink: #1e2a20;
+    --muted: #5f6f63;
+    --line: #dfe6df;
+    --accent: #2f7d4f;
+    --accent-ink: #ffffff;
+    --agree: #2f7d4f;
+    --agree-bg: #edf6ef;
+    --differ: #b7791f;
+    --differ-bg: #fdf6e7;
+    --single: #5f6f63;
+    --single-bg: #eef1ee;
+    --shadow: 0 1px 3px rgba(30,42,32,.08), 0 6px 20px rgba(30,42,32,.06);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 20px 16px 80px; }
+  h1 { font-size: 1.5rem; margin: 8px 0 4px; letter-spacing: -.01em; }
+  .lead { color: var(--muted); margin: 0 0 18px; }
+  a { color: var(--accent); }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 18px; margin: 0 0 16px;
+  }
+  .section-tag {
+    display: inline-block; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--accent); font-weight: 700; margin: 0 0 10px;
+  }
+  .muted { color: var(--muted); }
+  .hidden { display: none !important; }
+
+  /* Controls */
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 0 0 18px; }
+  .control { display: flex; flex-direction: column; gap: 4px; }
+  .control label { font-size: .74rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+  select { padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; color: inherit; background: #fbfcfb; }
+  .toggles { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .toggle { display: inline-flex; align-items: center; gap: 7px; font-size: .92rem; cursor: pointer; }
+
+  /* Overview */
+  .overview { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 6px; }
+  .stat { flex: 1 1 130px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; box-shadow: var(--shadow); }
+  .stat .n { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
+  .stat .k { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 700; }
+
+  /* People chips */
+  .people { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 0; }
+  .who { display: inline-flex; align-items: center; gap: 8px; background: #fbfcfb; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px 5px 6px; font-size: .9rem; }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: .72rem; font-weight: 800; flex: 0 0 auto; }
+  .who .country { color: var(--muted); font-size: .82rem; }
+
+  /* Legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 8px 0 0; font-size: .84rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+
+  /* Form section */
+  .formhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 30px 0 12px; }
+  .formhead h2 { font-size: 1.2rem; margin: 0; }
+  .formhead .sub { color: var(--muted); font-size: .88rem; }
+
+  /* Question card */
+  .q { border-left: 4px solid var(--single); }
+  .q.agree { border-left-color: var(--agree); }
+  .q.differ { border-left-color: var(--differ); }
+  .q .qtext { font-weight: 600; margin: 2px 0 2px; }
+  .q .qhelp { color: var(--muted); font-size: .88rem; margin: 0 0 8px; }
+  .q .badge { float: right; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: 3px 9px; border-radius: 999px; margin-left: 10px; }
+  .badge.agree { color: var(--agree); background: var(--agree-bg); }
+  .badge.differ { color: var(--differ); background: var(--differ-bg); }
+  .badge.single { color: var(--single); background: var(--single-bg); }
+  .badge.none { color: var(--single); background: var(--single-bg); }
+
+  .answers { margin: 10px 0 0; border-top: 1px dashed var(--line); }
+  .arow { display: grid; grid-template-columns: 190px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .arow:last-child { border-bottom: 0; }
+  .arow .person { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .arow .person .name { font-weight: 600; font-size: .92rem; overflow: hidden; text-overflow: ellipsis; }
+  .arow .person .country { color: var(--muted); font-size: .78rem; }
+  .arow .val { min-width: 0; }
+  .chip { display: inline-block; background: var(--agree-bg); color: var(--agree); border: 1px solid #cfe6d6; border-radius: 8px; padding: 3px 10px; margin: 0 6px 6px 0; font-size: .9rem; font-weight: 600; }
+  .note { color: var(--muted); font-size: .87rem; font-style: italic; margin: 2px 0 0; }
+  .noans { color: var(--muted); font-style: italic; font-size: .9rem; }
+
+  @media (max-width: 560px) {
+    .arow { grid-template-columns: 1fr; gap: 4px; }
+  }
+  .banner { padding: 12px 14px; border-radius: 10px; margin: 0 0 16px; font-weight: 600; }
+  .banner.err { background: #fdecec; color: #a12626; }
+  .footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 30px; }
+  .backlink { display: inline-block; margin: 0 0 4px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>VMS — Requirements Results</h1>
+  <p class="lead">How each person answered, question by question. Green = everyone agrees, amber = answers differ.</p>
+  <div id="banner"></div>
+
+  <div id="overview"></div>
+
+  <div class="controls" id="controls" style="margin-top:16px"></div>
+
+  <div id="report"></div>
+
+  <p class="footer" id="foot"></p>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+// Same published "Answers" CSV that the requirements loop already reads.
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQDOCvWbhJjSPwlHLjImiL_iXxbqwYUk-NQRoDoCemN2KDVTLinO61e4gkTrd8nczkYf_BSYUuQrJAv/pub?gid=1421897485&single=true&output=csv';
+// ─────────────────────────────────────────────────────────────────────────────
+
+const $ = (s, r=document) => r.querySelector(s);
+const el = (t, props={}, kids=[]) => { const n=document.createElement(t); Object.assign(n,props); (Array.isArray(kids)?kids:[kids]).forEach(k=>k!=null&&n.append(k)); return n; };
+
+const PALETTE = ['#2f7d4f','#2563a8','#a1522f','#7a4fa8','#a83a5b','#3a8a8a','#8a7a2f'];
+const state = { forms: [], questions: {}, submissions: [], respondents: [], countryOf: {}, colorOf: {},
+                filterPerson: 'all', filterCountry: 'all', onlyDiff: false, hideUnanswered: true };
+
+// ── CSV parsing (RFC-4180: quotes, doubled quotes, embedded commas/newlines) ──
+function parseCSV(text) {
+  const rows = []; let row = [], field = '', i = 0, inQ = false;
+  while (i < text.length) {
+    const c = text[i];
+    if (inQ) {
+      if (c === '"') { if (text[i+1] === '"') { field += '"'; i += 2; continue; } inQ = false; i++; continue; }
+      field += c; i++; continue;
+    }
+    if (c === '"') { inQ = true; i++; continue; }
+    if (c === ',') { row.push(field); field = ''; i++; continue; }
+    if (c === '\r') { i++; continue; }
+    if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; i++; continue; }
+    field += c; i++;
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows;
+}
+
+function initials(name) {
+  const p = (name || '?').trim().split(/\s+/);
+  return ((p[0]||'?')[0] + (p.length > 1 ? p[p.length-1][0] : '')).toUpperCase();
+}
+function norm(v) { return Array.isArray(v) ? [...v].map(x=>String(x).trim()).sort().join(' | ') : String(v==null?'':v).trim(); }
+
+async function boot() {
+  try {
+    const cfg = await (await fetch('questions/forms.json?_=' + Date.now())).json();
+    state.forms = cfg.forms || [];
+    await Promise.all(state.forms.map(async f => {
+      state.questions[f.id] = (await (await fetch('questions/' + f.id + '.json?_=' + Date.now())).json());
+    }));
+  } catch (e) { return fail('Could not load the question definitions.'); }
+
+  let rows;
+  try {
+    const txt = await (await fetch(CSV_URL + '&_=' + Date.now())).text();
+    rows = parseCSV(txt);
+  } catch (e) { return fail('Could not load the answers sheet. Check the published CSV link.'); }
+
+  const header = rows.shift() || [];
+  const col = Object.fromEntries(header.map((h,i)=>[h.trim(), i]));
+  const iAt = col['submittedAt'], iForm = col['form'], iResp = col['respondent'], iAns = col['answers(json)'];
+
+  // Keep only the latest submission per (respondent, form).
+  const latest = {};
+  rows.forEach(r => {
+    if (!r || r[iResp] == null) return;
+    const resp = (r[iResp]||'').trim(); const form = (r[iForm]||'').trim();
+    if (!resp || !form) return;
+    let answers = {};
+    try { answers = JSON.parse(r[iAns] || '{}'); } catch (e) {}
+    const at = r[iAt] || '';
+    const key = resp + '||' + form;
+    if (!latest[key] || at > latest[key].at) latest[key] = { resp, form, at, answers };
+  });
+  state.submissions = Object.values(latest);
+
+  // Respondents, their country (from any of their submissions), and a stable colour.
+  const names = [...new Set(state.submissions.map(s => s.resp))].sort((a,b)=>a.localeCompare(b));
+  state.respondents = names;
+  names.forEach((n,i) => { state.colorOf[n] = PALETTE[i % PALETTE.length]; });
+  names.forEach(n => {
+    const c = state.submissions.filter(s => s.resp === n).map(s => s.answers['respondent.country']).find(Boolean);
+    state.countryOf[n] = c || 'Unknown';
+  });
+
+  if (!state.submissions.length) return fail('No answers have been submitted yet.');
+  renderOverview();
+  renderControls();
+  render();
+}
+
+function fail(msg) { $('#banner').append(el('div', { className:'banner err', textContent: msg })); }
+
+function whoChip(name) {
+  return el('span', { className:'who' }, [
+    el('span', { className:'avatar', style:'background:'+state.colorOf[name], textContent: initials(name) }),
+    el('span', {}, [ el('span', { textContent: name + ' ' }), el('span', { className:'country', textContent: '· ' + state.countryOf[name] }) ])
+  ]);
+}
+
+function renderOverview() {
+  const box = $('#overview'); box.innerHTML = '';
+  const lastAt = state.submissions.map(s=>s.at).sort().slice(-1)[0] || '';
+  const countries = [...new Set(state.respondents.map(n => state.countryOf[n]).filter(c => c && c !== 'Unknown'))];
+
+  const stats = el('div', { className:'overview' }, [
+    el('div', { className:'stat' }, [ el('div',{className:'n',textContent:String(state.respondents.length)}), el('div',{className:'k',textContent:'People'}) ]),
+    el('div', { className:'stat' }, [ el('div',{className:'n',textContent:String(state.submissions.length)}), el('div',{className:'k',textContent:'Form responses'}) ]),
+    el('div', { className:'stat' }, [ el('div',{className:'n',textContent:String(countries.length || '—')}), el('div',{className:'k',textContent:'Countries'}) ]),
+  ]);
+  box.append(stats);
+
+  const people = el('div', { className:'card', style:'margin-top:10px' });
+  people.append(el('div', { className:'section-tag', textContent:'Who has answered' }));
+  const list = el('div', { className:'people' });
+  state.respondents.forEach(n => list.append(whoChip(n)));
+  people.append(list);
+  const legend = el('div', { className:'legend' }, [
+    el('span', {}, [ el('span',{className:'dot',style:'background:var(--agree)'}), document.createTextNode('Everyone agrees') ]),
+    el('span', {}, [ el('span',{className:'dot',style:'background:var(--differ)'}), document.createTextNode('Answers differ') ]),
+    el('span', {}, [ el('span',{className:'dot',style:'background:var(--single)'}), document.createTextNode('Only one response') ]),
+  ]);
+  people.append(legend);
+  if (lastAt) people.append(el('div', { className:'muted', style:'font-size:.82rem;margin-top:10px', textContent:'Latest response: ' + new Date(lastAt).toLocaleString() }));
+  box.append(people);
+}
+
+function renderControls() {
+  const c = $('#controls'); c.innerHTML = '';
+  const countries = ['all', ...new Set(state.respondents.map(n => state.countryOf[n]))];
+
+  const personSel = el('select', { onchange: e => { state.filterPerson = e.target.value; render(); } });
+  personSel.append(el('option', { value:'all', textContent:'Everyone' }));
+  state.respondents.forEach(n => personSel.append(el('option', { value:n, textContent: n + ' (' + state.countryOf[n] + ')' })));
+  personSel.value = state.filterPerson;
+
+  const countrySel = el('select', { onchange: e => { state.filterCountry = e.target.value; render(); } });
+  countries.forEach(c2 => countrySel.append(el('option', { value:c2, textContent: c2 === 'all' ? 'All countries' : c2 })));
+  countrySel.value = state.filterCountry;
+
+  const diff = el('input', { type:'checkbox', checked: state.onlyDiff, onchange: e => { state.onlyDiff = e.target.checked; render(); } });
+  const hide = el('input', { type:'checkbox', checked: state.hideUnanswered, onchange: e => { state.hideUnanswered = e.target.checked; render(); } });
+
+  c.append(
+    el('div', { className:'control' }, [ el('label',{textContent:'Person'}), personSel ]),
+    el('div', { className:'control' }, [ el('label',{textContent:'Country'}), countrySel ]),
+    el('div', { className:'control' }, [ el('label',{textContent:'Show'}), el('div',{className:'toggles',style:'height:38px'}, [
+      el('label',{className:'toggle'},[diff, document.createTextNode('Only where answers differ')]),
+      el('label',{className:'toggle'},[hide, document.createTextNode('Hide unanswered')]),
+    ]) ])
+  );
+}
+
+// Consensus is computed across ALL respondents who answered (ignores the filters),
+// so the colour of a question stays meaningful even when viewing one person.
+function consensus(entries) {
+  if (entries.length === 0) return 'none';
+  if (entries.length === 1) return 'single';
+  const set = new Set(entries.map(e => norm(e.value)));
+  return set.size === 1 ? 'agree' : 'differ';
+}
+
+function valueNode(value) {
+  const wrap = el('div', { className:'val' });
+  const arr = Array.isArray(value) ? value : [value];
+  arr.forEach(v => wrap.append(el('span', { className:'chip', textContent: String(v) })));
+  return wrap;
+}
+
+function render() {
+  const report = $('#report'); report.innerHTML = '';
+  const inScope = name => (state.filterPerson === 'all' || name === state.filterPerson)
+                       && (state.filterCountry === 'all' || state.countryOf[name] === state.filterCountry);
+
+  let shownQuestions = 0;
+
+  state.forms.forEach(f => {
+    const def = state.questions[f.id]; if (!def) return;
+    const subs = state.submissions.filter(s => s.form === f.id);
+
+    const cards = [];
+    def.questions.forEach(q => {
+      // Every respondent who answered this question (unfiltered — drives the colour).
+      const allEntries = subs
+        .filter(s => s.answers[q.id] != null && s.answers[q.id] !== '' && !(Array.isArray(s.answers[q.id]) && s.answers[q.id].length === 0))
+        .map(s => ({ name: s.resp, value: s.answers[q.id], note: s.answers[q.id + '__note'] || '' }));
+      const cons = consensus(allEntries);
+
+      if (state.onlyDiff && cons !== 'differ') return;
+      const visible = allEntries.filter(e => inScope(e.name));
+      if (state.hideUnanswered && visible.length === 0) return;
+
+      const card = el('div', { className:'card q ' + (cons === 'agree' ? 'agree' : cons === 'differ' ? 'differ' : '') });
+      const badgeText = cons === 'agree' ? 'Aligned' : cons === 'differ' ? 'Differs' : cons === 'single' ? '1 response' : 'No answers';
+      card.append(el('span', { className:'badge ' + cons, textContent: badgeText }));
+      if (q.section) card.append(el('div', { className:'section-tag', textContent: q.section }));
+      card.append(el('div', { className:'qtext', textContent: q.text }));
+      if (q.help) card.append(el('div', { className:'qhelp', textContent: q.help }));
+
+      const ans = el('div', { className:'answers' });
+      if (visible.length === 0) {
+        ans.append(el('div', { className:'noans', style:'padding:10px 0', textContent:'No answers for the current filter.' }));
+      } else {
+        visible.sort((a,b)=>a.name.localeCompare(b.name)).forEach(e => {
+          const row = el('div', { className:'arow' });
+          row.append(el('div', { className:'person' }, [
+            el('span', { className:'avatar', style:'background:'+state.colorOf[e.name], textContent: initials(e.name) }),
+            el('div', {}, [ el('div',{className:'name',textContent:e.name}), el('div',{className:'country',textContent:state.countryOf[e.name]}) ])
+          ]));
+          const v = valueNode(e.value);
+          if (e.note) v.append(el('div', { className:'note', textContent: '“' + e.note + '”' }));
+          row.append(v);
+          ans.append(row);
+        });
+      }
+      card.append(ans);
+      cards.push(card);
+      shownQuestions++;
+    });
+
+    if (cards.length === 0) return;
+
+    // Which people contributed to this topic (after filters), for the sub-heading.
+    const contributors = [...new Set(subs.map(s => s.resp).filter(inScope))];
+    report.append(el('div', { className:'formhead' }, [
+      el('h2', { textContent: f.title }),
+      el('div', { className:'sub', textContent: contributors.length + ' ' + (contributors.length === 1 ? 'response' : 'responses') })
+    ]));
+    cards.forEach(c => report.append(c));
+  });
+
+  if (shownQuestions === 0) {
+    report.append(el('div', { className:'card muted', textContent: 'Nothing to show for the current filter — try clearing "Only where answers differ" or "Hide unanswered".' }));
+  }
+  $('#foot').textContent = 'Live from the requirements form · reload to refresh.';
+}
+
+boot();
+</script>
+</body>
+</html>
