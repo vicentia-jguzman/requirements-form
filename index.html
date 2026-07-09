@@ -93,6 +93,9 @@
     <button class="btn" id="submitBtn" type="submit">Submit answers</button>
     <p class="footer">You can reopen this page and change your answers anytime.</p>
   </form>
+
+  <!-- Confirmation shown after a successful submit -->
+  <div id="done" class="card hidden"></div>
 </div>
 
 <script>
@@ -274,14 +277,28 @@ async function start() {
   render();
 }
 
+function showDone() {
+  $('#form').classList.add('hidden');
+  const d = $('#done'); d.innerHTML = ''; d.classList.remove('hidden');
+  const title = (state.data && state.data.meta && state.data.meta.title) || 'this topic';
+  d.append(el('div', { className:'section-tag', textContent:'Saved' }));
+  d.append(el('div', { style:'font-size:1.15rem;font-weight:700;margin:2px 0 6px', textContent:'✓ Your answers were saved' }));
+  d.append(el('div', { className:'help', textContent: title + ' · answered by ' + (state.respondent || '') }));
+  const review = el('button', { className:'btn', style:'margin-top:16px', textContent:'Review / change my answers' });
+  review.onclick = () => { d.classList.add('hidden'); $('#form').classList.remove('hidden'); render(); window.scrollTo({top:0, behavior:'smooth'}); };
+  d.append(review);
+  d.append(el('a', { className:'backlink', href:'./', textContent:'← Back to all topics', style:'display:block;margin-top:16px' }));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
 async function submit(e) {
   e.preventDefault();
   const btn = $('#submitBtn'); btn.disabled = true; btn.textContent = 'Sending…';
   try {
     const out = await post({ passcode: state.passcode, respondent: state.respondent, form: state.formId, answers: state.values });
     if (out.error) throw new Error(out.error);
-    banner('Thank you — your answers were saved. You can close this page or change answers and submit again.', 'ok');
-    window.scrollTo({top:0, behavior:'smooth'});
+    banner('');
+    showDone();
   } catch (err) {
     banner('Could not save: ' + err.message, 'err');
   } finally {
