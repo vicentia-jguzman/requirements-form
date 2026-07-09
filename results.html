@@ -100,6 +100,12 @@
   @media (max-width: 560px) {
     .arow { grid-template-columns: 1fr; gap: 4px; }
   }
+  /* Gate */
+  .gate label { display: block; font-weight: 600; margin: 0 0 6px; }
+  input[type=text] { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; color: inherit; background: #fbfcfb; }
+  input[type=text]:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+  .btn { appearance: none; border: 0; border-radius: 12px; padding: 14px 18px; font: inherit; font-weight: 700; background: var(--accent); color: var(--accent-ink); cursor: pointer; width: 100%; }
+  .btn:disabled { opacity: .5; cursor: default; }
   .banner { padding: 12px 14px; border-radius: 10px; margin: 0 0 16px; font-weight: 600; }
   .banner.err { background: #fdecec; color: #a12626; }
   .footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 30px; }
@@ -112,11 +118,24 @@
   <p class="lead">How each person answered, question by question. Green = everyone agrees, amber = answers differ.</p>
   <div id="banner"></div>
 
-  <div id="overview"></div>
+  <!-- Access gate — same code as the submission form -->
+  <div id="gate" class="card gate hidden">
+    <div class="section-tag">Restricted</div>
+    <div style="font-weight:700;font-size:1.1rem;margin:0 0 4px">Enter the access code to view results</div>
+    <div class="muted" style="margin:0 0 14px;font-size:.9rem">Use the same access code as the requirements form.</div>
+    <label for="code">Access code</label>
+    <input type="text" id="code" autocomplete="off" placeholder="Enter the access code" />
+    <div style="height:12px"></div>
+    <button class="btn" id="viewBtn">View results</button>
+  </div>
 
-  <div class="controls" id="controls" style="margin-top:16px"></div>
+  <div id="main" class="hidden">
+    <div id="overview"></div>
 
-  <div id="report"></div>
+    <div class="controls" id="controls" style="margin-top:16px"></div>
+
+    <div id="report"></div>
+  </div>
 
   <p class="footer" id="foot"></p>
 </div>
@@ -125,6 +144,10 @@
 // ── Config ──────────────────────────────────────────────────────────────────
 // Same published "Answers" CSV that the requirements loop already reads.
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQDOCvWbhJjSPwlHLjImiL_iXxbqwYUk-NQRoDoCemN2KDVTLinO61e4gkTrd8nczkYf_BSYUuQrJAv/pub?gid=1421897485&single=true&output=csv';
+// Same Apps Script web app the form uses — we reuse its `verifyOnly` check so the
+// results page accepts the same access code as the submission form.
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbw7NdTpcuzuLd_2B2JBoX7602V-GdolvE0qQY_Wtxv2MkS0BxHvT-eAfMZ-w9Q7pu5DhA/exec';
+const AUTH_KEY = 'vmsResultsAuth';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const $ = (s, r=document) => r.querySelector(s);
@@ -159,7 +182,50 @@ function initials(name) {
 }
 function norm(v) { return Array.isArray(v) ? [...v].map(x=>String(x).trim()).sort().join(' | ') : String(v==null?'':v).trim(); }
 
-async function boot() {
+// Post JSON as text/plain so it stays a "simple" CORS request (no preflight),
+// matching how the submission form talks to the Apps Script.
+async function post(payload) {
+  const res = await fetch(ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
+
+function lock() { try { localStorage.removeItem(AUTH_KEY); } catch (e) {} location.reload(); }
+
+async function unlock() {
+  const code = $('#code').value.trim();
+  if (!code) { fail('Please enter the access code.'); return; }
+  const btn = $('#viewBtn'); btn.disabled = true; btn.textContent = 'Checking…';
+  $('#banner').innerHTML = '';
+  try {
+    const out = await post({ verifyOnly: true, passcode: code });
+    if (out.error) { fail('Wrong access code.'); return; }
+  } catch (e) {
+    fail('Could not reach the server — please try again.'); return;
+  } finally {
+    btn.disabled = false; btn.textContent = 'View results';
+  }
+  try { localStorage.setItem(AUTH_KEY, code); } catch (e) {}
+  enter();
+}
+
+function enter() {
+  $('#banner').innerHTML = '';
+  $('#gate').classList.add('hidden');
+  $('#main').classList.remove('hidden');
+  loadReport();
+}
+
+function start() {
+  let saved = null;
+  try { saved = localStorage.getItem(AUTH_KEY); } catch (e) {}
+  if (saved) enter(); else $('#gate').classList.remove('hidden');
+}
+
+async function loadReport() {
   try {
     const cfg = await (await fetch('questions/forms.json?_=' + Date.now())).json();
     state.forms = cfg.forms || [];
@@ -207,7 +273,7 @@ async function boot() {
   render();
 }
 
-function fail(msg) { $('#banner').append(el('div', { className:'banner err', textContent: msg })); }
+function fail(msg) { const b = $('#banner'); b.innerHTML = ''; b.append(el('div', { className:'banner err', textContent: msg })); }
 
 function whoChip(name) {
   return el('span', { className:'who' }, [
@@ -350,10 +416,13 @@ function render() {
   if (shownQuestions === 0) {
     report.append(el('div', { className:'card muted', textContent: 'Nothing to show for the current filter — try clearing "Only where answers differ" or "Hide unanswered".' }));
   }
-  $('#foot').textContent = 'Live from the requirements form · reload to refresh.';
+  $('#foot').textContent = 'Live from the requirements form · reload to refresh. ';
+  $('#foot').append(el('a', { href:'#', textContent:'Lock', onclick: e => { e.preventDefault(); lock(); } }));
 }
 
-boot();
+$('#viewBtn').addEventListener('click', unlock);
+$('#code').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+start();
 </script>
 </body>
 </html>
