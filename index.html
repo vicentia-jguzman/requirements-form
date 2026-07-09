@@ -182,10 +182,10 @@ async function showMenu() {
   const creds = loadCreds();
   if (creds) { state.respondent = creds.name; showIdentity(); }
   const menu = $('#menu'); menu.innerHTML = ''; menu.classList.remove('hidden');
-  (cfg.forms || []).forEach(f => {
+  (cfg.forms || []).forEach((f, i) => {
     const card = el('a', { className:'card', href:'?form=' + encodeURIComponent(f.id) });
     card.append(el('span', { className:'arrow', textContent:'→' }));
-    card.append(el('div', { className:'section-tag', textContent:'Topic' }));
+    card.append(el('div', { className:'section-tag', textContent:'Form ' + (i + 1) }));
     card.append(el('div', { style:'font-weight:600', textContent:f.title }));
     if (f.desc) card.append(el('div', { className:'help', textContent:f.desc }));
     menu.append(card);
